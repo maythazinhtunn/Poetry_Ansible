@@ -1,0 +1,57 @@
+---
+- name: Copy provision file 
+  copy:
+    src: /home/may/Documents/work/project/ansible_project/Poetry_Ansible/roles/provision/files/pcf-v0.1.0.tar
+    dest: /home/frontiir/pcf/pcf-v0.1.0.tar
+
+- name: Extract Provision file
+  unarchive:
+    src: /home/frontiir/pcf/pcf-v0.1.0.tar
+    dest: /home/frontiir/pcf/
+    remote_src: yes
+
+- name: Set Permissions
+  file:
+    path: "/home/frontiir/pcf"
+    mode: "0755"
+    recurse: yes
+
+- name: Set owner and group
+  file:
+    path: "/home/frontiir/pcf"
+    owner: frontiir
+    group: frontiir
+    recurse: yes
+
+- name: Remove zip file
+  file:
+    path: /home/frontiir/pcf/pcf-v0.1.0.tar
+    state: absent
+
+- name: Create Python virtual environment for pt_agent
+  shell: |
+    cd /home/frontiir/pcf/
+    python3.8 -m venv .venv
+  become: false
+
+- name: Packages Install with Poetry
+  shell: |
+    cd /home/frontiir/pcf
+    poetry install
+
+- name: Set .venv owner and group
+  file:
+    path: "/home/frontiir/pcf/.venv"
+    owner: frontiir
+    group: frontiir
+    recurse: yes
+
+- name: Copy .env template
+  template:
+    src: /home/may/Documents/work/project/ansible_project/Poetry_Ansible/roles/provision/files/envfile
+    dest: /home/frontiir/pcf/.env  # Specify the destination path here
+
+- name: Set Permissions for env 
+  file:
+    path: "/home/frontiir/pcf/.env"
+    mode: "0664"

@@ -1,0 +1,20 @@
+# roles/poetry/tasks/main.yaml
+
+---
+- name: Install pip3
+  apt:
+    name: python3-pip
+    state: present
+  become: true
+
+- name: Upgrade pip
+  command: "/usr/local/bin/python3.10 -m pip install -U pip"
+  become: true
+
+- name: Install Poetry
+  pip:
+    name: poetry
+    state: present
+    executable: pip3
+  become: yes
+

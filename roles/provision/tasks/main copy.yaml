@@ -1,0 +1,44 @@
+---
+- name: Copy provision file 
+  copy:
+    src: /home/may/Documents/work/project/ansible_project/Poetry_Ansible/roles/provision/files/provisioning-module.tar
+    dest: /home/frontiir/provisioning-module.tar
+
+- name: Extract Provision file
+  unarchive:
+    src: /home/frontiir/provisioning-module.tar
+    dest: /home/frontiir/
+    remote_src: yes
+
+- name: Set Permissions
+  file:
+    path: "/home/frontiir/pcf"
+    mode: "777"
+
+- name: Set owner and group
+  file:
+    path: "/home/frontiir/pcf"
+    owner: frontiir
+    group: frontiir
+
+- name: Remove zip file
+  file:
+    path: /home/frontiir/provisioning-module.tar
+    state: absent
+
+- name: Remove .venv 
+  file:
+    path: /home/frontiir/pcf/.venv
+    state: absent
+
+- name: Packages Install with Poetry
+  shell: |
+    cd /home/frontiir/pcf
+    poetry install
+
+- name: Set .venv owner and group
+  file:
+    path: "/home/frontiir/pcf/.venv"
+    owner: frontiir
+    group: frontiir
+
